@@ -35,7 +35,7 @@ class LLaMA_adapter(nn.Module):
         ) # max_batch_size only affects inferenc
 
         # 1. clip and clip projector
-        self.clip, self.clip_transform = clip.load(clip_model)
+        self.clip, self.clip_transform = clip.load(clip_model, jit=False)
 
         clip_dim = self.clip.visual.proj.shape[1]
         self.clip_proj = nn.Linear(clip_dim, v_embed_dim)
@@ -65,7 +65,13 @@ class LLaMA_adapter(nn.Module):
         model_args.lora_rank = lora_rank
         model_args.w_new_gate = w_new_gate
         model_args.vocab_size = self.tokenizer.n_words
-        torch.set_default_tensor_type(torch.cuda.HalfTensor)
+
+        if torch.cuda.is_available():
+            torch.set_default_tensor_type(torch.cuda.HalfTensor)
+        else:
+            print("CUDA not available. Using CPU with 16-bit precision.")
+            torch.set_default_tensor_type(torch.HalfTensor)
+
         self.llama = Transformer(model_args)
         torch.set_default_tensor_type(torch.FloatTensor)
 
@@ -309,7 +315,7 @@ def load(name, llama_dir, llama_type="7B", device="cuda" if torch.cuda.is_availa
     model = LLaMA_adapter(
         llama_ckpt_dir, llama_tokenzier_path,
         max_seq_len=512, max_batch_size=1,
-        clip_model='ViT-L/14',
+        clip_model='ViT-B/32',
         v_embed_dim=768, v_depth=8,
         v_num_heads=16, v_mlp_ratio=4.0,
         query_len=10, query_layer=31,

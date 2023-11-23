@@ -3,12 +3,17 @@ import llama
 import torch
 from PIL import Image
 
+"""
+pip install clip-by-openai --no-deps
+"""
+
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-llama_dir = "/path/to/LLaMA/"
+llama_dir = "/Users/ahren/Workspace/models"
 
 # choose from BIAS-7B, LORA-BIAS-7B, CAPTION-7B.pth
-model, preprocess = llama.load("BIAS-7B", llama_dir, device)
+model, preprocess = llama.load("LORA-BIAS-7B", llama_dir, llama_type="7B", device=device)
 model.eval()
 
 prompt = llama.format_prompt('Please introduce this painting.')
