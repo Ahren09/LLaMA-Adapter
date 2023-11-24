@@ -293,7 +293,8 @@ _MODELS = {
 def available_models():
     return list(_MODELS.keys())
 
-def load(name, llama_dir, llama_type="7B", device="cuda" if torch.cuda.is_available() else "cpu", download_root='ckpts', max_seq_len=512,
+def load(name, llama_dir, llama_type="7B", device="cuda" if torch.cuda.is_available() else "cpu",
+         download_root='llama_adapter_v2_multimodal7b/ckpts', max_seq_len=512,
         phase="finetune"):
     if name in _MODELS:
         model_path = _download(_MODELS[name], download_root)
@@ -312,11 +313,16 @@ def load(name, llama_dir, llama_type="7B", device="cuda" if torch.cuda.is_availa
     ckpt = torch.load(model_path, map_location='cpu')
     model_cfg = ckpt.get('config', {})
 
+    clip_model = "../../models/ViT-L-14.pt"
+
     model = LLaMA_adapter(
         llama_ckpt_dir, llama_tokenzier_path,
-        max_seq_len=512, max_batch_size=1,
-        clip_model='ViT-B/32',
-        v_embed_dim=768, v_depth=8,
+        # max_seq_len=512,
+        max_seq_len=768,
+        max_batch_size=1,
+        clip_model=clip_model, # 'ViT-L/14',
+        v_embed_dim=768,
+        v_depth=8,
         v_num_heads=16, v_mlp_ratio=4.0,
         query_len=10, query_layer=31,
         w_bias=model_cfg.get('w_bias', False), 
