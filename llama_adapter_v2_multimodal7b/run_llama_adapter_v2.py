@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath('../LMMEval/utility/'))
 # sys.path.insert(0, os.path.abspath('.'))
 
 from utility.utils import truncate_input, save, load_existing_results, load_data, print_colored
-from prompts.prompts import get_prompt, get_prompt_for_image_description
+from prompts.prompts import get_prompt, get_prompt_for_caption
 from arguments import parse_args
 
 """
@@ -48,7 +48,7 @@ else:
 
 print("Using device:", device)
 
-if ":" in device:
+if "cuda:" in device:
     torch.cuda.set_device(int(device.split(':')[-1]))
 
 df, image_directory_name = load_data(args)
@@ -60,7 +60,7 @@ df, image_directory_name = load_data(args)
 # Note that this is not the huggingface version.
 llama_dir = "../../models"
 
-if platform.system() != "Darwin":
+if not args.debug:
     # choose from BIAS-7B, LORA-BIAS-7B, CAPTION-7B.pth
     model, preprocess = llama.load("BIAS-7B", llama_dir, llama_type="7B", device=device)
     model.eval()
@@ -88,7 +88,7 @@ for idx in trange(START, len(df), args.batch_size):
                 question, image_file = get_prompt(args, line)
 
             elif question_type == "caption":
-                question = get_prompt_for_image_description()
+                question = get_prompt_for_caption()
                 _, image_file = get_prompt(args, line)
 
 
