@@ -80,6 +80,8 @@ for idx in trange(START, len(df), args.batch_size):
 
     explanation = caption = pred = None
 
+    context = ""
+
     for question_type in args.question_types:
 
         try:
@@ -98,7 +100,12 @@ for idx in trange(START, len(df), args.batch_size):
             else:
                 raise ValueError
 
-            prompt = llama.format_prompt(question)
+            if question_type == "explain":
+                prompt = f"{context}{question}"
+
+            else:
+
+                prompt = llama.format_prompt(question)
 
             print_colored(prompt, "blue")
 
@@ -129,6 +136,8 @@ for idx in trange(START, len(df), args.batch_size):
                 explanation = generated_text
                 generated_text = truncate_input(generated_text, 128)
 
+            context += f"{generated_text}"
+            print_colored(generated_text, "yellow")
 
 
 
