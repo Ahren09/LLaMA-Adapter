@@ -11,8 +11,8 @@ import torch
 from PIL import Image
 
 # Import utilities from LLaVA
-sys.path.insert(0, os.path.abspath('../LMMEval/'))
-sys.path.insert(0, os.path.abspath('../LMMEval/utility/'))
+sys.path.insert(0, os.path.abspath('../MLLMEval/'))
+sys.path.insert(0, os.path.abspath('../MLLMEval/utility/'))
 # sys.path.insert(0, os.path.abspath('.'))
 
 from utility.utils import truncate_input, save, load_existing_results, load_data, print_colored
