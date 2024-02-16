@@ -51,7 +51,7 @@ print("Using device:", device)
 if "cuda:" in device:
     torch.cuda.set_device(int(device.split(':')[-1]))
 
-df, image_directory_name = load_data(args)
+df, image_directory_name = load_data(split=args.split, data_dir=args.data_dir, dataset_name=args.dataset_name)
 
 
 
